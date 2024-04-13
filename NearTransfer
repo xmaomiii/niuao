@@ -1,0 +1,55 @@
+import org.nearprotocol.lib.api.JsonRpc;
+import org.nearprotocol.lib.api.SyncRpc;
+import org.nearprotocol.lib.model.types.UnsignedTx;
+import org.nearprotocol.lib.wallet.KeyPair;
+import org.nearprotocol.lib.wallet.Wallet;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
+public class NearTransfer {
+    public static void main(String[] args) {
+        // NEAR节点的RPC URL
+        String rpcUrl = "https://rpc.mainnet.near.org";
+
+        // 发件人账户
+        String senderAccount = "sender.testnet";
+
+        // 发件人私钥
+        String senderPrivateKey = "YOUR_SENDER_PRIVATE_KEY";
+
+        // 收件人账户
+        String recipientAccount = "recipient.testnet";
+
+        // 转账金额（NEAR）
+        BigDecimal amountNear = BigDecimal.valueOf(10);
+
+        try {
+            // 初始化 NEAR RPC
+            JsonRpc jsonRpc = new SyncRpc(rpcUrl);
+
+            // 创建钱包并导入发件人私钥
+            KeyPair senderKeyPair = KeyPair.fromString(senderPrivateKey);
+            Wallet wallet = new Wallet();
+            wallet.addKeyPair(senderAccount, senderKeyPair);
+
+            // 构建未签名交易
+            UnsignedTx unsignedTx = new UnsignedTx(
+                    senderAccount,
+                    recipientAccount,
+                    amountNear.toPlainString(),
+                    new BigInteger("100000000000000"),
+                    0
+            );
+
+            // 签名交易
+            String signedTx = wallet.signTx(senderAccount, unsignedTx);
+
+            // 广播交易
+            String txHash = jsonRpc.sendTxSync(signedTx);
+            System.out.println("Transaction hash: " + txHash);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
