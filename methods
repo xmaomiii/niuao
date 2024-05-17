@@ -1,0 +1,35 @@
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.http.HttpService;
+import org.web3j.protocol.core.methods.response.EthGetBalance;
+import org.web3j.utils.Convert;
+import org.web3j.utils.Convert.Unit;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
+public class BalanceChecker {
+
+    public static void main(String[] args) throws Exception {
+        // 连接到以太坊节点
+        Web3j web3 = Web3j.build(new HttpService("https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID"));
+
+        // 要查询的以太坊地址
+        String address = "YOUR_ETHEREUM_ADDRESS";
+
+        // 获取余额
+        BigInteger balanceWei = getEthBalance(web3, address);
+
+        // 将余额从 Wei 转换为以太
+        BigDecimal balanceEther = Convert.fromWei(balanceWei.toString(), Unit.ETHER);
+        System.out.println("Address: " + address);
+        System.out.println("Balance: " + balanceEther + " ETH");
+    }
+
+    public static BigInteger getEthBalance(Web3j web3, String address) throws Exception {
+        // 发送 RPC 请求，获取余额
+        EthGetBalance ethGetBalance = web3
+                .ethGetBalance(address, org.web3j.protocol.core.methods.request.DefaultBlockParameterName.LATEST)
+                .sendAsync().get();
+        return ethGetBalance.getBalance();
+    }
+}
