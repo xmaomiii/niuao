@@ -1,0 +1,20 @@
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+
+const infuraProjectId = 'YOUR_INFURA_PROJECT_ID';  // Infura 项目 ID
+const mnemonic = 'YOUR_MNEMONIC';  // 助记词
+
+module.exports = {
+    networks: {
+        optimism: {
+            provider: () => new HDWalletProvider(mnemonic, `https://optimism-mainnet.infura.io/v3/${infuraProjectId}`),
+            network_id: 10,  // Optimism 的网络 ID
+            gas: 8000000,
+            gasPrice: 15000000,
+        },
+    },
+    compilers: {
+        solc: {
+            version: '^0.8.0',
+        },
+    },
+};
